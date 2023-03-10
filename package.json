@@ -1,6 +1,6 @@
 {
   "name": "brij",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "build responsively in json-schema. but really it's json",
   "main": "index.js",
   "author": "Mierenga",

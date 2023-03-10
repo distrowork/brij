@@ -36,11 +36,13 @@ program.command('dto')
       const intermediatePath = relativePath.slice(-1*basename.length)
 
       OASGenDTO.generateDTOs({
-        oasDirectory: path.join(oasDirectory, intermediatePath),
-        outputDirectory: path.join(outputDirectory, intermediatePath),
+        // oasDirectory: path.join(oasDirectory, intermediatePath),
+        // outputDirectory: path.join(outputDirectory, intermediatePath),
+        oasDirectory,
+        outputDirectory,
+        oasName: 'petstore.json',
         // oasName: 'petstore.json',
-        // oasName: 'petstore.json',
-        oasName: basename,
+        // oasName: basename,
         schemasPath: '#/definitions',
       })
     }
