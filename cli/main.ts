@@ -8,12 +8,13 @@ const program = new Command();
 program
   .name('brij')
   .description('build responsively in json-schema')
-  .version('0.0.1');
+  .version('0.0.3');
 
 program.command('dto')
   .description('Output TypeScript artifacts based on a json-schema definitions in oas files')
   .argument('<string>', 'source directory with oas files')
   .argument('<string>', 'output directory for generated TypeScript files')
+  .option('--schemas <string>', 'JSON path to the section in the OAS with the JSON schemas, e.g. \'#/definitions\'')
   .action(async (oasDirectory: string, outputDirectory: string, options: Record<string, any>) => {
     const specs = []
 
@@ -23,30 +24,33 @@ program.command('dto')
       }
     }
 
-    const prefix = path.resolve(oasDirectory)
+    const absPrefix = path.resolve(oasDirectory)
 
-    console.log({specs, prefix})
+    console.log(`
+Generating DTOs from JSON schemas
+  - OAS directory: '${absPrefix}'
+  - schemas JSON path: '${options.schemas}'
+`)
 
     for (const spec of specs) {
-      const relativePath = path.relative(prefix, spec.path)
-      console.log('rel ' + relativePath)
+      const relativePath = path.relative(absPrefix, spec.path)
       const basename = path.basename(relativePath)
-      console.log('basename ' + basename)
+      const intermediatePath = relativePath.slice(0, -1*basename.length)
 
-      const intermediatePath = relativePath.slice(-1*basename.length)
+      console.log(`Found file ${relativePath}`)
 
-      OASGenDTO.generateDTOs({
-        // oasDirectory: path.join(oasDirectory, intermediatePath),
-        // outputDirectory: path.join(outputDirectory, intermediatePath),
-        oasDirectory,
-        outputDirectory,
-        oasName: 'petstore.json',
-        // oasName: 'petstore.json',
-        // oasName: basename,
-        schemasPath: '#/definitions',
+
+      const result = await OASGenDTO.generateDTOs({
+        oasDirectory: path.join(oasDirectory, intermediatePath),
+        outputDirectory: path.join(outputDirectory, intermediatePath),
+        oasName: basename,
+        schemasPath: options.schemas,
       })
-    }
 
+      result
+        ?  console.log(`Generated DTOs for ${relativePath}`)
+        :  console.log(`No DTOs found in ${relativePath}`)
+    }
   })
 
 program.parse()

@@ -3,10 +3,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import SwaggerParser from '@apidevtools/swagger-parser'
 import { compile } from 'json-schema-to-typescript'
-import Ajv from 'ajv'
-
-const ajv = new Ajv()
-
+import { ajv } from './json-schema.base'
 export interface DTOConfig {
   oasDirectory: string
   outputDirectory: string
@@ -32,10 +29,10 @@ export class OASGenDTO {
     const oas = await OASGenDTO.parseOAS(fileContent)
     const lookup = config.schemasPath.split('/').slice(1)
 
-    let current = oas
+    let current: any = oas
 
     for (const prop of lookup) {
-      if (typeof current !== 'object') {
+      if (!current || typeof current !== 'object') {
         current = null
         break
       }
@@ -88,7 +85,15 @@ export class OASGenDTO {
     if (fs.existsSync(outputFolderPath)) {
       fs.rmSync(outputFolderPath, { recursive: true })
     }
-    fs.mkdirSync(outputFolderPath)
+    let cumulative = ''
+    outputFolderPath.split('/').forEach(folder => {
+      cumulative = path.join(cumulative, folder)
+      if (cumulative) {
+        if (!fs.existsSync(cumulative)) {
+          fs.mkdirSync(cumulative)
+        }
+      }
+    })
   }
 
   private static stripExtensions(oasName: string) {
@@ -102,25 +107,36 @@ export class OASGenDTO {
    * 
    * @param config
    */
-  static async generateDTOs(config: DTOConfig) {
+  static async generateDTOs(config: DTOConfig): Promise<boolean> {
     const name = OASGenDTO.stripExtensions(config.oasName)
 
-    const dtoFolder = `dto/${name}`
+    const schemas = await OASGenDTO.getSchemas(config)
+    const sourceAbsPath = OASGenDTO.getAbsPath(config.oasName, config.oasDirectory)
+
+    if (!schemas) {
+      console.warn(`no schemas found at JSON path '${config.schemasPath}' in oas at ${sourceAbsPath}`)
+
+      return false
+    }
+
+    const dtoFolder = path.join(config.outputDirectory, name)
     OASGenDTO.prepareOutputDirectory(dtoFolder)
 
-    const schemas = await OASGenDTO.getSchemas(config)
-    console.log({schemas})
-
-    Promise.all(Object.entries(schemas).map(async ([key, content]: [string, any]) => {
+    await Promise.all(Object.entries(schemas).map(async ([key, content]: [string, any]) => {
       const output = path.join(dtoFolder, `${key}.ts`)
-      OASGenDTO.verifyValidator(content)
+      try {
+        OASGenDTO.verifyValidator(content)
+      } catch (e: any) {
+        console.error(`error compiling ajv for ${key} in ${sourceAbsPath}`)
+        console.error(`\t- ${e?.message}\n`)
 
-      // TODO pass an example from the oas and ensure it validatekj
+        return
+      }
 
       const tsInteface = await compile(content, key)
       const schemaText = JSON.stringify(content, null, 2)
       const generated = `${tsInteface}
-import { JSONSchema } from '../../lib/json-schema.base'
+import { JSONSchema } from 'brij/lib/json-schema.base'
 
 export class ${key}Schema extends JSONSchema {
   constructor() {
@@ -130,5 +146,7 @@ export class ${key}Schema extends JSONSchema {
 `
       fs.writeFileSync(output, generated)
     }))
+
+    return true
   }
 }

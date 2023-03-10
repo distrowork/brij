@@ -1,5 +1,8 @@
 import Ajv, { ErrorObject, ValidateFunction } from 'ajv'
-const ajv = new Ajv()
+import addFormats from 'ajv-formats'
+
+export const ajv = new Ajv({ strictSchema: false })
+addFormats(ajv)
 
 export interface ValidationResult {
   valid: boolean

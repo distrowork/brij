@@ -1,3 +1,5 @@
 node_modules/
 examples/
-!examples/petstore.json
+example/
+!example/dto/petstore/*
+!example/oas/petstore.json
