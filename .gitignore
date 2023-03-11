@@ -3,3 +3,4 @@ examples/
 example/
 !example/dto/petstore/*
 !example/oas/petstore.json
+local/

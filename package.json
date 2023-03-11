@@ -1,14 +1,17 @@
 {
   "name": "brij",
-  "version": "0.0.3",
-  "description": "build responsively in json-schema. but really it's json",
+  "version": "0.0.4",
+  "description": "build responsively in json-schema",
   "main": "index.js",
   "author": "Mierenga",
   "license": "ISC",
   "scripts": {
-    "gen": "ts-node ./cli/main.ts",
-    "gen:watch": "nodemon --ignore example/ --exec \"ts-node\" ./cli/main.ts",
-    "build": "tsc ./cli/main.ts"
+    "dev": "ts-node ./src/cli/run.ts",
+    "dev:watch": "nodemon --ignore example/ --exec \"ts-node\" ./src/cli/run.ts",
+    "example:dto": "yarn dev dto example/oas example/dto --schemas '\\#/definitions'",
+    "example:dto:watch": "yarn dev:watch dto example/oas example/dto --schemas '\\#/definitions'",
+    "build": "tsc -p tsconfig.json",
+    "prepublish": "yarn build"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
@@ -22,7 +25,6 @@
     "@apidevtools/swagger-parser": "^10.1.0",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
-    "brij": "^0.0.2",
     "commander": "^10.0.0",
     "js-yaml": "^4.1.0",
     "json-schema-to-typescript": "^12.0.0",
