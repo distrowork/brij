@@ -7,12 +7,6 @@ exports.JSONSchema = exports.ajvRemoveAdditional = exports.ajv = void 0;
 const ajv_1 = __importDefault(require("ajv"));
 const ajv_formats_1 = __importDefault(require("ajv-formats"));
 const remove_additional_props_error_1 = require("./errors/remove-additional-props.error");
-/**
- * WARNING: Be mindful updating the interface of this file.
- *
- * This file is is used as the base JSON schema validator class for
- * validators generated from OAS schemas
- */
 exports.ajv = (0, ajv_formats_1.default)(new ajv_1.default({
     strictSchema: false
 }));
@@ -20,6 +14,13 @@ exports.ajvRemoveAdditional = (0, ajv_formats_1.default)(new ajv_1.default({
     strictSchema: false,
     removeAdditional: true, // for more info see https://ajv.js.org/guide/modifying-data.html
 }));
+/*
+ * Base JSON schema validator class
+
+ * Uses ajv
+
+ * Provides methods for validation and removal of extra properies not allowed in the schema
+ */
 class JSONSchema {
     _schema;
     _validate;
@@ -46,7 +47,7 @@ class JSONSchema {
         // This mutates the object by removing properties that aren't in the schema
         const valid = this._removeAdditional(o);
         if (!valid) {
-            throw new remove_additional_props_error_1.RemoveAdditionalPropsError('Recieved invalid object when removing additional properties', this._removeAdditional.errors);
+            throw new remove_additional_props_error_1.RemoveAdditionalPropsError(this._removeAdditional.errors, this.schema);
         }
         return o;
     }

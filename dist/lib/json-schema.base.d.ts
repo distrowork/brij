@@ -1,10 +1,4 @@
 import { ErrorObject } from 'ajv';
-/**
- * WARNING: Be mindful updating the interface of this file.
- *
- * This file is is used as the base JSON schema validator class for
- * validators generated from OAS schemas
- */
 export declare const ajv: import("ajv/dist/core").default;
 export declare const ajvRemoveAdditional: import("ajv/dist/core").default;
 export interface ValidationResult {

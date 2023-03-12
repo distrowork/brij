@@ -16,7 +16,8 @@
         "example:dto": "yarn dev dto example/oas example/dto --schemas '\\#/definitions'",
         "example:dto:watch": "yarn dev:watch dto example/oas example/dto --schemas '\\#/definitions'",
         "build": "tsc -p tsconfig.json",
-        "prepublish": "yarn build"
+        "prepublish": "yarn build",
+        "docs": "npx typedoc src/lib/index.ts"
     },
     "devDependencies": {
         "@apidevtools/swagger-parser": "^10.1.0",
@@ -29,6 +30,7 @@
         "klaw": "^4.1.0",
         "ts-node": "^10.9.1",
         "tsc": "^2.0.4",
+        "typedoc": "^0.23.26",
         "typescript": "^4.9.5"
     },
     "dependencies": {
