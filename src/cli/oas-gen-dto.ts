@@ -17,7 +17,12 @@ const typescriptInterfaceOptions: Partial<TypescriptInterfaceOptions> = {
     singleQuote: true,
     semi: false,
   },
-  bannerComment: '/* eslint-disable */\n/**\n* This file was automatically generated.\n* DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema in the source OAS file,\n* and run `brij dto` to regenerate this file.\n*/'
+  bannerComment: [
+    '/* eslint-disable */',
+    '/**\n* This file was automatically generated.\n* DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema in the source OAS file,\n* and run `./node_modules/brij/index.js dto` to regenerate this file.\n*/',
+    '',
+    'import { JSONSchema } from \'brij\''
+  ].join('\n')
 }
 
 export class OASGenDTO {
@@ -143,8 +148,6 @@ export class OASGenDTO {
     const schemaText = JSON.stringify(jsonSchema, null, 2)
 
     return `${generatedTsInteface}
-import { JSONSchema } from 'brij'
-
 class ${key}Schema extends JSONSchema {
   constructor() {
     super(${schemaText.split('\n').join('\n    ')})
