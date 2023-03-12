@@ -1,6 +1,6 @@
 {
   "name": "brij",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "build responsively in json-schema",
   "main": "index.js",
   "types": "dist/index.d.ts",
@@ -10,31 +10,36 @@
     "type": "git",
     "url": "https://github.com/distrowork/brij"
   },
+  "bin": {
+    "brij": "node ./bin/index.js"
+  },
   "scripts": {
     "dev": "ts-node ./src/cli/run.ts",
     "dev:watch": "nodemon --ignore example/ --exec \"ts-node\" ./src/cli/run.ts",
     "example:dto": "yarn dev dto example/oas example/dto --schemas '\\#/definitions'",
     "example:dto:watch": "yarn dev:watch dto example/oas example/dto --schemas '\\#/definitions'",
     "build": "tsc -p tsconfig.json",
-    "prepublish": "yarn build",
+    "bundle:cli": "yarn ncc build dist/cli/run.js -o bin/ -m",
+    "prepublish": "yarn build && yarn bundle:cli",
     "docs": "npx typedoc src/lib/index.ts"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "@types/js-yaml": "^4.0.5",
     "@types/klaw": "^3.0.3",
     "@types/node": "^18.14.6",
+    "@vercel/ncc": "^0.36.1",
+    "commander": "^10.0.0",
+    "js-yaml": "^4.1.0",
+    "json-schema-to-typescript": "^12.0.0",
+    "klaw": "^4.1.0",
     "ts-node": "^10.9.1",
     "tsc": "^2.0.4",
     "typedoc": "^0.23.26",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@apidevtools/swagger-parser": "^10.1.0",
     "ajv": "^8.12.0",
-    "ajv-formats": "^2.1.1",
-    "commander": "^10.0.0",
-    "js-yaml": "^4.1.0",
-    "json-schema-to-typescript": "^12.0.0",
-    "klaw": "^4.1.0"
+    "ajv-formats": "^2.1.1"
   }
 }
