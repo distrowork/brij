@@ -1,6 +1,6 @@
 {
   "name": "brij",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "build responsively in json-schema",
   "main": "index.js",
   "types": "dist/index.d.ts",
