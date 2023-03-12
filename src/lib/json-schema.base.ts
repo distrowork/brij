@@ -2,13 +2,6 @@ import Ajv, { ErrorObject, ValidateFunction } from 'ajv'
 import addFormats from 'ajv-formats'
 import { RemoveAdditionalPropsError } from './errors/remove-additional-props.error'
 
-/**
- * WARNING: Be mindful updating the interface of this file.
- *
- * This file is is used as the base JSON schema validator class for
- * validators generated from OAS schemas
- */
-
 export const ajv = addFormats(new Ajv({
   strictSchema: false
 }))
@@ -23,6 +16,13 @@ export interface ValidationResult {
   errors: ErrorObject<string, Record<string, any>, unknown>[] | null | undefined
 }
 
+/*
+ * Base JSON schema validator class
+
+ * Uses ajv
+
+ * Provides methods for validation and removal of extra properies not allowed in the schema
+ */
 export class JSONSchema {
   private _schema: any
 
@@ -59,8 +59,8 @@ export class JSONSchema {
 
     if (!valid) {
       throw new RemoveAdditionalPropsError(
-        'Recieved invalid object when removing additional properties',
-        this._removeAdditional.errors
+        this._removeAdditional.errors,
+        this.schema
       )
     }
 
