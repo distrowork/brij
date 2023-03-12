@@ -15,12 +15,7 @@ const typescriptInterfaceOptions = {
         singleQuote: true,
         semi: false,
     },
-    bannerComment: [
-        '/* eslint-disable */',
-        '/**\n* This file was automatically generated.\n* DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema in the source OAS file,\n* and run `./node_modules/brij/index.js dto` to regenerate this file.\n*/',
-        '',
-        'import { JSONSchema } from \'brij\''
-    ].join('\n')
+    bannerComment: ''
 };
 class OASGenDTO {
     static getAbsPath(pathRelToBase, baseDir) {
@@ -119,7 +114,17 @@ class OASGenDTO {
     static async renderTypeScriptDTO(jsonSchema, key) {
         const generatedTsInteface = await (0, json_schema_to_typescript_1.compile)(jsonSchema, key, typescriptInterfaceOptions);
         const schemaText = JSON.stringify(jsonSchema, null, 2);
-        return `${generatedTsInteface}
+        return `/* eslint-disable */
+/**
+ * This file was automatically generated.
+ * DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema in the source OAS file,
+ * and use \`yarn brij dto\` to regenerate this file.
+ */
+
+import { JSONSchema } from 'brij'
+
+${generatedTsInteface}
+
 class ${key}Schema extends JSONSchema {
   constructor() {
     super(${schemaText.split('\n').join('\n    ')})
