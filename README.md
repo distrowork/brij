@@ -50,7 +50,7 @@ Options:
   -h, --help          display help for command
 ```
 
-#### Example usage of `dto`
+#### Example usage of `dto` command
 Let's say
 - you have an OAS file at `oas/petstore.json`.
   - it should have JSON schemas defined under a certain JSON path, e.g. `#/definitions` or `#/components/schemas`
@@ -86,7 +86,40 @@ The `dto` command will:
 - the interface and validator instance will both have the same identifier
   - e.g., if the JSON Schema key in the OAS file is `ApiResponse`, then the interface and validator instance will both be named `ApiResponse`
 
-#### Example consumption of the generated DTO:
+#### Example consumption of the generated DTO
+
+The DTO file generated for each JSON schema looks like this, including an exported interface and validator instance:
+```ts
+import {JSONSchema} from 'brij'
+
+export interface ApiResponse {
+  code?: number
+  type?: string
+  message?: string
+  [k: string]: unknown
+}
+
+class ApiResponseSchema extends JSONSchema {
+  constructor() {
+    super({
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    })
+  }
+}
+
+export const ApiResponse = new ApiResponseSchema()
+```
 
 You can import the generated DTO into your program and use it like this:
 ```ts
@@ -106,7 +139,7 @@ export function test(input: any): ApiResponse|never {
 
 To strip additional properties from an object to ensure it matches the JSON schema definition:
 ```ts
-import { ApiResponse } from '../dto/ApiResponse'
+import { ApiResponse, RemoveAdditonalPropsError } from '../dto/ApiResponse'
 
 export function removeAdditonalProperties(input: ApiResponse): ApiResponse|never {
   try {
