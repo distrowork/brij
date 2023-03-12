@@ -1,6 +1,6 @@
 {
   "name": "brij",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "build responsively in json-schema",
   "main": "index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "url": "https://github.com/distrowork/brij"
   },
   "bin": {
-    "brij": "node ./bin/index.js"
+    "brij": "bin/cli.js"
   },
   "scripts": {
     "dev": "ts-node ./src/cli/run.ts",
@@ -19,7 +19,7 @@
     "example:dto": "yarn dev dto example/oas example/dto --schemas '\\#/definitions'",
     "example:dto:watch": "yarn dev:watch dto example/oas example/dto --schemas '\\#/definitions'",
     "build": "tsc -p tsconfig.json",
-    "bundle:cli": "yarn ncc build dist/cli/run.js -o bin/ -m",
+    "bundle:cli": "yarn ncc build dist/cli/run.js -o bin/ -m && echo '#!/usr/bin/env node' > bin/cli.js && cat bin/index.js >> bin/cli.js && chmod +x bin/cli.js && rm bin/index.js",
     "prepublish": "yarn build && yarn bundle:cli",
     "docs": "npx typedoc src/lib/index.ts"
   },
