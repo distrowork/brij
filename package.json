@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "build responsively in json-schema",
   "main": "index.js",
+  "types": "dist/index.d.ts",
   "author": "Mierenga",
   "license": "ISC",
   "repository": {
