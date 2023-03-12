@@ -2,7 +2,7 @@
 
 build responsively in json-schema
 
-## Sumary
+## Summary
 
 Generate TypeScript interface and validators from JSON schemas defined in OAS files.
 
