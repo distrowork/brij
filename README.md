@@ -23,7 +23,7 @@ yarn add brij
 ## CLI
 
 ```
-Usage: ./index.js [options] [command]
+Usage: brij [options] [command]
 
 Options:
   -V, --version                    output the version number
@@ -37,7 +37,7 @@ Commands:
 ### Command: `dto`
 
 ```
-Usage: ./index.js dto [options] <string> <string>
+Usage: brij dto [options] <string> <string>
 
 Output TypeScript artifacts based on json-schema definitions in OAS files
 
@@ -139,7 +139,7 @@ export function test(input: any): ApiResponse|never {
 
 To strip additional properties from an object to ensure it matches the JSON schema definition:
 ```ts
-import { ApiResponse, RemoveAdditonalPropsError } from '../dto/ApiResponse'
+import { ApiResponse, RemoveAdditionalPropsError } from '../dto/ApiResponse'
 
 export function removeAdditonalProperties(input: ApiResponse): ApiResponse|never {
   try {
