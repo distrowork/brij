@@ -1,7 +1,7 @@
 import path from 'path'
 import klaw from 'klaw'
 import { Command } from 'commander'
-import { OASGenDTO } from './oas-gen-dto'
+import { GenDTOs } from './dto/gen-dtos'
 import packageJson from './package.symlink.json'
 
 const program = new Command()
@@ -30,38 +30,33 @@ license: ${packageJson.license}
 
 program.command('dto')
   .description('Output TypeScript artifacts based on json-schema definitions in OAS files')
-  .argument('<string>', 'source directory with OAS files')
-  .argument('<string>', 'output directory for generated TypeScript files')
+  .argument('source <string>', 'source directory with OAS or JSON schema files')
+  .argument('output <string>', 'output directory for generated TypeScript files')
   .option('--schemas <string>', 'JSON path to the section in the OAS with the JSON schemas, e.g. \'#/definitions\'')
-  .action(async(oasDirectory: string, outputDirectory: string, options: Record<string, any>) => {
-    const specs = []
-
-    for await (const file of klaw(oasDirectory)) {
-      if (!file.stats.isDirectory()) {
-        specs.push(file)
-      }
-    }
-
-    const absPrefix = path.resolve(oasDirectory)
+  .action(async(schemaDirectory: string, outputDirectory: string, options: Record<string, any>) => {
+    const absRoot = path.resolve(schemaDirectory)
 
     console.log(`
 Generating DTOs from JSON schemas
-  - OAS directory: '${absPrefix}'
+  - OAS directory: '${absRoot}'
   - schemas JSON path: '${options.schemas}'
 `)
+    for await (const file of klaw(schemaDirectory)) {
+      if (file.stats.isDirectory()) {
+        continue
+      }
 
-    for (const spec of specs) {
-      const relativePath = path.relative(absPrefix, spec.path)
+      const relativePath = path.relative(absRoot, file.path)
       const basename = path.basename(relativePath)
       const intermediatePath = relativePath.slice(0, -1*basename.length)
 
       console.log(`Found file ${relativePath}`)
 
-      const result = await OASGenDTO.generateDTOs({
-        oasDirectory: path.join(oasDirectory, intermediatePath),
+      const result = await GenDTOs.generateDTOs({
+        sourceDirectory: path.join(schemaDirectory, intermediatePath),
         outputDirectory: path.join(outputDirectory, intermediatePath),
-        oasName: basename,
-        schemasPath: options.schemas,
+        filename: basename,
+        schemasJSONPath: options.schemas,
       })
 
       result
@@ -71,6 +66,7 @@ Generating DTOs from JSON schemas
       console.log()
     }
   })
+
 
 export function run() {
   program.parse(process.argv)

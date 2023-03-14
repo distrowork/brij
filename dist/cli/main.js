@@ -7,7 +7,7 @@ exports.run = void 0;
 const path_1 = __importDefault(require("path"));
 const klaw_1 = __importDefault(require("klaw"));
 const commander_1 = require("commander");
-const oas_gen_dto_1 = require("./oas-gen-dto");
+const gen_dtos_1 = require("./dto/gen-dtos");
 const package_symlink_json_1 = __importDefault(require("./package.symlink.json"));
 const program = new commander_1.Command();
 program
@@ -32,32 +32,29 @@ license: ${package_symlink_json_1.default.license}
     .version(package_symlink_json_1.default.version);
 program.command('dto')
     .description('Output TypeScript artifacts based on json-schema definitions in OAS files')
-    .argument('<string>', 'source directory with OAS files')
-    .argument('<string>', 'output directory for generated TypeScript files')
+    .argument('source <string>', 'source directory with OAS or JSON schema files')
+    .argument('output <string>', 'output directory for generated TypeScript files')
     .option('--schemas <string>', 'JSON path to the section in the OAS with the JSON schemas, e.g. \'#/definitions\'')
-    .action(async (oasDirectory, outputDirectory, options) => {
-    const specs = [];
-    for await (const file of (0, klaw_1.default)(oasDirectory)) {
-        if (!file.stats.isDirectory()) {
-            specs.push(file);
-        }
-    }
-    const absPrefix = path_1.default.resolve(oasDirectory);
+    .action(async (schemaDirectory, outputDirectory, options) => {
+    const absRoot = path_1.default.resolve(schemaDirectory);
     console.log(`
 Generating DTOs from JSON schemas
-  - OAS directory: '${absPrefix}'
+  - OAS directory: '${absRoot}'
   - schemas JSON path: '${options.schemas}'
 `);
-    for (const spec of specs) {
-        const relativePath = path_1.default.relative(absPrefix, spec.path);
+    for await (const file of (0, klaw_1.default)(schemaDirectory)) {
+        if (file.stats.isDirectory()) {
+            continue;
+        }
+        const relativePath = path_1.default.relative(absRoot, file.path);
         const basename = path_1.default.basename(relativePath);
         const intermediatePath = relativePath.slice(0, -1 * basename.length);
         console.log(`Found file ${relativePath}`);
-        const result = await oas_gen_dto_1.OASGenDTO.generateDTOs({
-            oasDirectory: path_1.default.join(oasDirectory, intermediatePath),
+        const result = await gen_dtos_1.GenDTOs.generateDTOs({
+            sourceDirectory: path_1.default.join(schemaDirectory, intermediatePath),
             outputDirectory: path_1.default.join(outputDirectory, intermediatePath),
-            oasName: basename,
-            schemasPath: options.schemas,
+            filename: basename,
+            schemasJSONPath: options.schemas,
         });
         result
             ? console.log(`  - Generated DTOs at ${outputDirectory}`)

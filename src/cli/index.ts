@@ -1,2 +1,2 @@
 export * from './main'
-export * from './oas-gen-dto'
+export * from './dto/gen-dtos'

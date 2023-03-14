@@ -15,5 +15,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./main"), exports);
-__exportStar(require("./oas-gen-dto"), exports);
+__exportStar(require("./dto/gen-dtos"), exports);
 //# sourceMappingURL=index.js.map
