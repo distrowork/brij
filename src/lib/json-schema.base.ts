@@ -1,6 +1,7 @@
 import Ajv, { ErrorObject, ValidateFunction } from 'ajv'
 import addFormats from 'ajv-formats'
 import { RemoveAdditionalPropsError } from './errors/remove-additional-props.error'
+import { JSONSchema7 } from 'json-schema';
 
 export const ajv = addFormats(new Ajv({
   strictSchema: false
@@ -24,7 +25,7 @@ export interface ValidationResult {
  * Provides methods for validation and removal of extra properies not allowed in the schema
  */
 export class JSONSchema {
-  private _schema: any
+  private _schema: JSONSchema7
 
   private _validate: ValidateFunction
 
@@ -34,11 +35,11 @@ export class JSONSchema {
     return ajv
   }
 
-  get schema() {
+  get schema(): JSONSchema7 {
     return JSON.parse(JSON.stringify(this._schema))
   }
 
-  constructor(schema: any) {
+  constructor(schema: JSONSchema7) {
     this._schema = schema
     this._validate = ajv.compile(schema)
     this._removeAdditional = ajvRemoveAdditional.compile(schema)
