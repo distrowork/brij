@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig",
+  "exclude": [
+    "jest.config.ts",
+    "**/*.test.*",
+    "**/__mocks__/*",
+    "**/__tests__/*",
+    "node_modules",
+    "example",
+    "dist"
+  ]
+}
