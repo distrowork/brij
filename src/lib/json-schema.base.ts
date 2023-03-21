@@ -41,7 +41,7 @@ export class JSONSchema {
   constructor(schema: any) {
     this._schema = schema
     this._validate = ajv.compile(schema)
-    this._removeAdditional = ajv.compile(schema)
+    this._removeAdditional = ajvRemoveAdditional.compile(schema)
   }
 
   validate(o: any): ValidationResult {
