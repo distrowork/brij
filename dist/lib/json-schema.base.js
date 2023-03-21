@@ -34,7 +34,7 @@ class JSONSchema {
     constructor(schema) {
         this._schema = schema;
         this._validate = exports.ajv.compile(schema);
-        this._removeAdditional = exports.ajv.compile(schema);
+        this._removeAdditional = exports.ajvRemoveAdditional.compile(schema);
     }
     validate(o) {
         const valid = this._validate(o);
