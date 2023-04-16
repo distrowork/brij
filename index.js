@@ -1,1 +1,0 @@
-./dist/cli/run.js
